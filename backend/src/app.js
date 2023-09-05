@@ -14,7 +14,7 @@ const user = mongoose.model("userinfo");
 const app = express();
 
 app.use(cors());
-const jws_token = "joieiurtlsit45w8erwe97rsdfg8h8r4d687sdfhjsdfsdf88s68sfdsfjahghgsg98r2f8";
+const jwt_token = "joieiurtlsit45w8erwe97rsdfg8h8r4d687sdfhjsdfsdf88s68sfdsfjahghgsg98r2f8";
 // require("./db/conn")
 const mongourl = "mongodb+srv://gaffars712:root@cluster0.elvebhl.mongodb.net/simple?retryWrites=true&w=majority"
 mongoose.connect(mongourl,{
@@ -64,7 +64,6 @@ app.post("/register",async(req,res)=>{
     try{
         const olduser = await user.findOne({email});
         if(olduser){
-            console.log('user all redy axist')
            return res.send({status:"user all redy exist"})
         }
         await user.create({
@@ -92,7 +91,7 @@ app.post("/login",async (req,res) => {
         return res.json({error:"user not exist"})
     }
     else if(await bcrypt.compare(pass,userexist.pass)){
-        const token = jwt.sign({},jws_token);
+        const token = jwt.sign({ email: userexist.email},jwt_token);
 
         if(res.status(201)){
             return res.json({status:"ok", data:token})
@@ -102,5 +101,24 @@ app.post("/login",async (req,res) => {
     }else {
     res.json({status:"eroor", error:"invalit pass"})
 }
-})
+});
+
+app.post("/userdata", async (req, res) => {
+    const { token } = req.body;
+    console.log(token + " token user");
+    try {
+        const userdetails = jwt.verify(token, jwt_token);
+        console.log(userdetails + " user jwt");
+        const usermaile = userdetails.email;
+        console.log(usermaile + " usermaile");
+        
+        const userData = await user.findOne({ email: usermaile });
+        console.log(userData + " hello backend");
+        
+        res.send({ status: "ok", data: userData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ status: "error", data: error });
+    }
+});
 

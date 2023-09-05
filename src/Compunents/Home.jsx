@@ -1,7 +1,35 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 
-const Home = () => {
-  return (
+const Home = (props) => {
+  const [userdata, setuserdata] = useState("")
+
+ useEffect(() => {
+  fetch("http://localhost:3000/userdata", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token")
+        
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data + "user registration");
+        setuserdata(data.data)
+      });
+ 
+ }, [ ])
+ 
+    
+
+
+  console.log(userdata)
+  return(
     <>
  <div className="md:flex md:items-center md:pl-40 md:pt-40 bg-image ">
   <div className="md:w-2/5">
@@ -10,8 +38,10 @@ const Home = () => {
     </div>
     <div className="mt-4">
       <h1 className="text-3xl md:text-4xl">
-        I'm Designer <br /> {'user name'}
+        I'm Designer <br /> {userdata.fname}
       </h1>
+      <br></br>
+      <h4>My Gmail Id is : - {userdata.email}</h4>
     </div>
     <p className="text-sm mt-2">
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maiores harum
@@ -24,6 +54,7 @@ const Home = () => {
     <div style={{marginBottom:"18rem"}}></div>
   </div>
   
+
 </div>
 
       

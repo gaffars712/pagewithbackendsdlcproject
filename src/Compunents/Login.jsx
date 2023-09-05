@@ -2,6 +2,7 @@ import React from "react";
 import logo from '../images/logo.jpg'
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -10,7 +11,10 @@ const Login = (props) =>{
     email:"",
     pass:""
   })
+  
+const [demo, setdemo] = useState()
 
+const navigate = useNavigate()
   const handeloncheng = (e) =>{
     const { name , value} = e.target;
     setuser(prevState =>({
@@ -42,7 +46,16 @@ const Login = (props) =>{
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data + "user registration");
+        console.log(data.data)
+        if(data.status === "ok"){
+          console.log(data.data + "user login succes");
+          alert("user Login SuccesFull");
+          window.localStorage.setItem("token", data.data);
+          navigate("/userdata")
+          // setdemo("loginpage " + data.data)
+        }else{
+          alert("user Not Found")
+        }
       });
   }
     return( <>
